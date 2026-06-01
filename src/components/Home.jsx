@@ -15,7 +15,7 @@ export default function App() {
   useEffect(() => {
     const fetchLiveStats = async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/griphill/stats');
+        const response = await fetch('https://api.diagonica.com/api/griphill/stats');
         const data = await response.json();
         if (response.ok && data.success) {
           setTotalSubmissions(data.totalSubmissions);
@@ -64,7 +64,7 @@ export default function App() {
     setLoading(true);
 
     try {
-      const response = await fetch('http://localhost:5000/api/griphill/register', {
+      const response = await fetch('https://api.diagonica.com/api/griphill/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
