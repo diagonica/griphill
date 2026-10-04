@@ -6,51 +6,51 @@ import '../components/Home.css';
 const API = import.meta.env.VITE_API_BASE_URL || 'https://api.diagonica.com/api';
 const SHOP_API = `${API}/griphill`;
 
-import A1_1 from './assets/WEBP/A1_Web/A1_1.webp';
-import A1_2 from './assets/WEBP/A1_Web/A1_2.webp';
-import A1_3 from './assets/WEBP/A1_Web/A1_3.webp';
-import A1_4 from './assets/WEBP/A1_Web/A1_4.webp';
-import A1_5 from './assets/WEBP/A1_Web/A1_5.webp';
+import A1_1 from '../assets/WEBP/A1_Web/A1_1.webp';
+import A1_2 from '../assets/WEBP/A1_Web/A1_2.webp';
+import A1_3 from '../assets/WEBP/A1_Web/A1_3.webp';
+import A1_4 from '../assets/WEBP/A1_Web/A1_4.webp';
+import A1_5 from '../assets/WEBP/A1_Web/A1_5.webp';
 
-import A2_1 from './assets/WEBP/A2_Web/A2_1.webp';
-import A2_2 from './assets/WEBP/A2_Web/A2_2.webp';
-import A2_3 from './assets/WEBP/A2_Web/A2_3.webp';
-import A2_5 from './assets/WEBP/A2_Web/A2_5.webp';
-import A2_6 from './assets/WEBP/A2_Web/A2_6.webp';
+import A2_1 from '../assets/WEBP/A2_Web/A2_1.webp';
+import A2_2 from '../assets/WEBP/A2_Web/A2_2.webp';
+import A2_3 from '../assets/WEBP/A2_Web/A2_3.webp';
+import A2_5 from '../assets/WEBP/A2_Web/A2_5.webp';
+import A2_6 from '../assets/WEBP/A2_Web/A2_6.webp';
 
-import B1_1 from './assets/WEBP/B1_Web/B1_1.webp';
-import B1_2 from './assets/WEBP/B1_Web/B1_2.webp';
-import B1_3 from './assets/WEBP/B1_Web/B1_3.webp';
-import B1_4 from './assets/WEBP/B1_Web/B1_4.webp';
-import B1_5 from './assets/WEBP/B1_Web/B1_5.webp';
+import B1_1 from '../assets/WEBP/B1_Web/B1_1.webp';
+import B1_2 from '../assets/WEBP/B1_Web/B1_2.webp';
+import B1_3 from '../assets/WEBP/B1_Web/B1_3.webp';
+import B1_4 from '../assets/WEBP/B1_Web/B1_4.webp';
+import B1_5 from '../assets/WEBP/B1_Web/B1_5.webp';
 
-import B2_1 from './assets/WEBP/B2_Web/B2_1.webp';
-import B2_2 from './assets/WEBP/B2_Web/B2_2.webp';
-import B2_3 from './assets/WEBP/B2_Web/B2_3.webp';
-import B2_4 from './assets/WEBP/B2_Web/B2_4.webp';
-import B2_5 from './assets/WEBP/B2_Web/B2_5.webp';
+import B2_1 from '../assets/WEBP/B2_Web/B2_1.webp';
+import B2_2 from '../assets/WEBP/B2_Web/B2_2.webp';
+import B2_3 from '../assets/WEBP/B2_Web/B2_3.webp';
+import B2_4 from '../assets/WEBP/B2_Web/B2_4.webp';
+import B2_5 from '../assets/WEBP/B2_Web/B2_5.webp';
 
-import C3_1 from './assets/WEBP/C3_Web/C3_1.webp';
-import C3_2 from './assets/WEBP/C3_Web/C3_2.webp';
-import C3_3 from './assets/WEBP/C3_Web/C3_3.webp';
-import C3_4 from './assets/WEBP/C3_Web/C3_4.webp';
-import C3_5 from './assets/WEBP/C3_Web/C3_5.webp';
+import C3_1 from '../assets/WEBP/C3_Web/C3_1.webp';
+import C3_2 from '../assets/WEBP/C3_Web/C3_2.webp';
+import C3_3 from '../assets/WEBP/C3_Web/C3_3.webp';
+import C3_4 from '../assets/WEBP/C3_Web/C3_4.webp';
+import C3_5 from '../assets/WEBP/C3_Web/C3_5.webp';
 
-import C4_1 from './assets/WEBP/C4_Web/C4_1.webp';
-import C4_3 from './assets/WEBP/C4_Web/C4_3.webp';
-import C4_4 from './assets/WEBP/C4_Web/C4_4.webp';
+import C4_1 from '../assets/WEBP/C4_Web/C4_1.webp';
+import C4_3 from '../assets/WEBP/C4_Web/C4_3.webp';
+import C4_4 from '../assets/WEBP/C4_Web/C4_4.webp';
 
-import D3_1 from './assets/WEBP/D3_Web/D3_1.webp';
-import D3_2 from './assets/WEBP/D3_Web/D3_2.webp';
-import D3_3 from './assets/WEBP/D3_Web/D3_3.webp';
-import D3_4 from './assets/WEBP/D3_Web/D3_4.webp';
-import D3_5 from './assets/WEBP/D3_Web/D3_5.webp';
+import D3_1 from '../assets/WEBP/D3_Web/D3_1.webp';
+import D3_2 from '../assets/WEBP/D3_Web/D3_2.webp';
+import D3_3 from '../assets/WEBP/D3_Web/D3_3.webp';
+import D3_4 from '../assets/WEBP/D3_Web/D3_4.webp';
+import D3_5 from '../assets/WEBP/D3_Web/D3_5.webp';
 
-import E1_1 from './assets/WEBP/E1_Web/E1_1.webp';
-import E1_2 from './assets/WEBP/E1_Web/E1_2.webp';
-import E1_3 from './assets/WEBP/E1_Web/E1_3.webp';
-import E1_4 from './assets/WEBP/E1_Web/E1_4.webp';
-import E1_5 from './assets/WEBP/E1_Web/E1_5.webp';
+import E1_1 from '../assets/WEBP/E1_Web/E1_1.webp';
+import E1_2 from '../assets/WEBP/E1_Web/E1_2.webp';
+import E1_3 from '../assets/WEBP/E1_Web/E1_3.webp';
+import E1_4 from '../assets/WEBP/E1_Web/E1_4.webp';
+import E1_5 from '../assets/WEBP/E1_Web/E1_5.webp';
 
 const FALLBACK_PRODUCTS = [
   {
