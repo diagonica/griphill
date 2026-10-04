@@ -2,18 +2,206 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { ArrowRight, Check, Heart, Menu, Search, Sparkles, X, ShoppingBag, Truck, Mail, MapPin,ShieldCheck } from 'lucide-react';
 import '../components/Home.css';
 
+
 const API = import.meta.env.VITE_API_BASE_URL || 'https://api.diagonica.com/api';
 const SHOP_API = `${API}/griphill`;
 
+import A1_1 from './assets/WEBP/A1_Web/A1_1.webp';
+import A1_2 from './assets/WEBP/A1_Web/A1_2.webp';
+import A1_3 from './assets/WEBP/A1_Web/A1_3.webp';
+import A1_4 from './assets/WEBP/A1_Web/A1_4.webp';
+import A1_5 from './assets/WEBP/A1_Web/A1_5.webp';
+
+import A2_1 from './assets/WEBP/A2_Web/A2_1.webp';
+import A2_2 from './assets/WEBP/A2_Web/A2_2.webp';
+import A2_3 from './assets/WEBP/A2_Web/A2_3.webp';
+import A2_5 from './assets/WEBP/A2_Web/A2_5.webp';
+import A2_6 from './assets/WEBP/A2_Web/A2_6.webp';
+
+import B1_1 from './assets/WEBP/B1_Web/B1_1.webp';
+import B1_2 from './assets/WEBP/B1_Web/B1_2.webp';
+import B1_3 from './assets/WEBP/B1_Web/B1_3.webp';
+import B1_4 from './assets/WEBP/B1_Web/B1_4.webp';
+import B1_5 from './assets/WEBP/B1_Web/B1_5.webp';
+
+import B2_1 from './assets/WEBP/B2_Web/B2_1.webp';
+import B2_2 from './assets/WEBP/B2_Web/B2_2.webp';
+import B2_3 from './assets/WEBP/B2_Web/B2_3.webp';
+import B2_4 from './assets/WEBP/B2_Web/B2_4.webp';
+import B2_5 from './assets/WEBP/B2_Web/B2_5.webp';
+
+import C3_1 from './assets/WEBP/C3_Web/C3_1.webp';
+import C3_2 from './assets/WEBP/C3_Web/C3_2.webp';
+import C3_3 from './assets/WEBP/C3_Web/C3_3.webp';
+import C3_4 from './assets/WEBP/C3_Web/C3_4.webp';
+import C3_5 from './assets/WEBP/C3_Web/C3_5.webp';
+
+import C4_1 from './assets/WEBP/C4_Web/C4_1.webp';
+import C4_3 from './assets/WEBP/C4_Web/C4_3.webp';
+import C4_4 from './assets/WEBP/C4_Web/C4_4.webp';
+
+import D3_1 from './assets/WEBP/D3_Web/D3_1.webp';
+import D3_2 from './assets/WEBP/D3_Web/D3_2.webp';
+import D3_3 from './assets/WEBP/D3_Web/D3_3.webp';
+import D3_4 from './assets/WEBP/D3_Web/D3_4.webp';
+import D3_5 from './assets/WEBP/D3_Web/D3_5.webp';
+
+import E1_1 from './assets/WEBP/E1_Web/E1_1.webp';
+import E1_2 from './assets/WEBP/E1_Web/E1_2.webp';
+import E1_3 from './assets/WEBP/E1_Web/E1_3.webp';
+import E1_4 from './assets/WEBP/E1_Web/E1_4.webp';
+import E1_5 from './assets/WEBP/E1_Web/E1_5.webp';
+
 const FALLBACK_PRODUCTS = [
-  { id: 1, sku: 'A1', name: 'Trek Trip Black', category: 'Laptop Backpack', description: 'Designed for the ultimate daily routine, The Omni-Blend features a convenient vertical front-zip pocket for fast, effortless access to your essentials. Weighing 1kg with dimensions of 32 cm x 46 cm x 18 cm, this pack effortlessly fits a 15.6-inch laptop. Built from advanced PU waterproof and mildew-proof fabric, it protects your gear in any weather while delivering a seamless balance of active utility and modern style.', price: 2499, mrp: 4998, stock_quantity: 0, inventory_managed: false, images: [{ url: '/products/A1_Web/A1_1.webp' }, { url: '/products/A1_Web/A1_2.webp' }, { url: '/products/A1_Web/A1_3.webp' }, { url: '/products/A1_Web/A1_4.webp' }, { url: '/products/A1_Web/A1_5.webp' }] },
-  { id: 2, sku: 'A2', name: 'Trek Trip Grey', category: 'Laptop Backpack', description: 'Designed for the ultimate daily routine, The Omni-Blend features a convenient vertical front-zip pocket for fast, effortless access to your essentials. Weighing 1kg with dimensions of 32 cm x 46 cm x 18 cm, this pack effortlessly fits a 15.6-inch laptop. Built from advanced PU waterproof and mildew-proof fabric, it protects your gear in any weather while delivering a seamless balance of active utility and modern style.', price: 2499, mrp: 4998, stock_quantity: 0, inventory_managed: false, images: [{ url: '/products/A2_Web/A2_1.webp' }, { url: '/products/A2_Web/A2_2.webp' }, { url: '/products/A2_Web/A2_3.webp' }, { url: '/products/A2_Web/A2_5.webp' }, { url: '/products/A2_Web/A2_6.webp' }] },
-  { id: 3, sku: 'B1', name: 'Aero Hybrid Grey', category: 'Laptop Backpack', description: 'Built for the fast-paced city lifestyle, Aero Hybrid champions an ultra-clean, minimalist front profile that pairs effortlessly with any professional wardrobe. Weighing 1kg and measuring 32 cm x 46 cm x 18 cm, it securely houses a 15.6-inch laptop within its structured interior. Crafted from durable PU waterproof and mildew-proof fabric, it keeps your tech safe, dry, and looking sharp through the urban commute.', price: 2499, mrp: 4998, stock_quantity: 0, inventory_managed: false, images: [{ url: '/products/B1_Web/B1_1.webp' }, { url: '/products/B1_Web/B1_2.webp' }, { url: '/products/B1_Web/B1_3.webp' }, { url: '/products/B1_Web/B1_4.webp' }, { url: '/products/B1_Web/B1_5.webp' }] },
-  { id: 4, sku: 'B2', name: 'Aero Hybrid Black', category: 'Laptop Backpack', description: 'Built for the fast-paced city lifestyle, Aero Hybrid champions an ultra-clean, minimalist front profile that pairs effortlessly with any professional wardrobe. Weighing 1kg and measuring 32 cm x 46 cm x 18 cm, it securely houses a 15.6-inch laptop within its structured interior. Crafted from durable PU waterproof and mildew-proof fabric, it keeps your tech safe, dry, and looking sharp through the urban commute.', price: 2499, mrp: 4998, stock_quantity: 0, inventory_managed: false, images: [{ url: '/products/B2_Web/B2_1.webp' }, { url: '/products/B2_Web/B2_2.webp' }, { url: '/products/B2_Web/B2_3.webp' }, { url: '/products/B2_Web/B2_4.webp' }, { url: '/products/B2_Web/B2_5.webp' }] },
-  { id: 5, sku: 'C3', name: 'Metro Merge Blue', category: 'Laptop Backpack', description: 'Engineered for travel and longer commutes, Metro Merge introduces a distinctive top-flap compartment layout for advanced multi-zone organization. Offering generous dimensions of 32 cm x 46 cm x 18 cm at a lightweight 1kg, it easily accommodates a 15.6-inch laptop and travel gear. Formulated with resilient PU waterproof and mildew-proof fabric, this pack ensures your belongings stay completely fresh, protected, and organized wherever your journey takes you', price: 2499, mrp: 4998, stock_quantity: 0, inventory_managed: false, images: [{ url: '/products/C3_Web/C3_1.webp' }, { url: '/products/C3_Web/C3_2.webp' }, { url: '/products/C3_Web/C3_3.webp' }, { url: '/products/C3_Web/C3_4.webp' }, { url: '/products/C3_Web/C3_5.webp' }] },
-  { id: 6, sku: 'C4', name: 'Metro Merge Black', category: 'Laptop Backpack', description: 'Engineered for travel and longer commutes, Metro Merge introduces a distinctive top-flap compartment layout for advanced multi-zone organization. Offering generous dimensions of 32 cm x 46 cm x 18 cm at a lightweight 1kg, it easily accommodates a 15.6-inch laptop and travel gear. Formulated with resilient PU waterproof and mildew-proof fabric, this pack ensures your belongings stay completely fresh, protected, and organized wherever your journey takes you', price: 2499, mrp: 4998, stock_quantity: 0, inventory_managed: false, images: [{ url: '/products/C4_Web/C4_1.webp' }, { url: '/products/C4_Web/C4_3.webp' }, { url: '/products/C4_Web/C4_4.webp' }] },
-  { id: 7, sku: 'D3', name: 'The Omni-Blend', category: 'Laptop Backpack', description: 'Combining high-security tech organization with sharp urban utility, The Fusion Vault is crafted to protect your valuables on the move. Weighing just 1kg with a 32 cm x 46 cm x 18 cm frame, it comfortably fits a 15.6-inch laptop alongside daily gear. Constructed from premium PU waterproof and mildew-proof fabric, it delivers ultimate all-weather defense and a confident, locked-down security experience for the modern professional.', price: 2499, mrp: 4998, stock_quantity: 0, inventory_managed: false, images: [{ url: '/products/D3_Web/D3_1.webp' }, { url: '/products/D3_Web/D3_2.webp' }, { url: '/products/D3_Web/D3_3.webp' }, { url: '/products/D3_Web/D3_4.webp' }, { url: '/products/D3_Web/D3_5.webp' }] },
-  { id: 8, sku: 'E1', name: 'The Fusion Vault', category: 'Laptop Backpack', description: 'Combining high-security tech organization with sharp urban utility, The Fusion Vault is crafted to protect your valuables on the move. Weighing just 1kg with a 32 cm x 46 cm x 18 cm frame, it comfortably fits a 15.6-inch laptop alongside daily gear. Constructed from premium PU waterproof and mildew-proof fabric, it delivers ultimate all-weather defense and a confident, locked-down security experience for the modern professional.', price: 2499, mrp: 4998, stock_quantity: 0, inventory_managed: false, images: [{ url: '/products/E1_Web/E1_1.webp' }, { url: '/products/E1_Web/E1_2.webp' }, { url: '/products/E1_Web/E1_3.webp' }, { url: '/products/E1_Web/E1_4.webp' }, { url: '/products/E1_Web/E1_5.webp' }] },
+  {
+    id: 1,
+    sku: 'A1',
+    name: 'Trek Trip Black',
+    category: 'Laptop Backpack',
+    description: 'Designed for the ultimate daily routine, The Omni-Blend features a convenient vertical front-zip pocket for fast, effortless access to your essentials. Weighing 1kg with dimensions of 32 cm x 46 cm x 18 cm, this pack effortlessly fits a 15.6-inch laptop. Built from advanced PU waterproof and mildew-proof fabric, it protects your gear in any weather while delivering a seamless balance of active utility and modern style.',
+    price: 2499,
+    mrp: 4998,
+    stock_quantity: 0,
+    inventory_managed: false,
+    images: [
+      { url: A1_1 },
+      { url: A1_2 },
+      { url: A1_3 },
+      { url: A1_4 },
+      { url: A1_5 }
+    ]
+  },
+
+  {
+    id: 2,
+    sku: 'A2',
+    name: 'Trek Trip Grey',
+    category: 'Laptop Backpack',
+    description: 'Designed for the ultimate daily routine, The Omni-Blend features a convenient vertical front-zip pocket for fast, effortless access to your essentials. Weighing 1kg with dimensions of 32 cm x 46 cm x 18 cm, this pack effortlessly fits a 15.6-inch laptop. Built from advanced PU waterproof and mildew-proof fabric, it protects your gear in any weather while delivering a seamless balance of active utility and modern style.',
+    price: 2499,
+    mrp: 4998,
+    stock_quantity: 0,
+    inventory_managed: false,
+    images: [
+      { url: A2_1 },
+      { url: A2_2 },
+      { url: A2_3 },
+      { url: A2_5 },
+      { url: A2_6 }
+    ]
+  },
+
+  {
+    id: 3,
+    sku: 'B1',
+    name: 'Aero Hybrid Grey',
+    category: 'Laptop Backpack',
+    description: 'Built for the fast-paced city lifestyle, Aero Hybrid champions an ultra-clean, minimalist front profile that pairs effortlessly with any professional wardrobe. Weighing 1kg and measuring 32 cm x 46 cm x 18 cm, it securely houses a 15.6-inch laptop within its structured interior. Crafted from durable PU waterproof and mildew-proof fabric, it keeps your tech safe, dry, and looking sharp through the urban commute.',
+    price: 2499,
+    mrp: 4998,
+    stock_quantity: 0,
+    inventory_managed: false,
+    images: [
+      { url: B1_1 },
+      { url: B1_2 },
+      { url: B1_3 },
+      { url: B1_4 },
+      { url: B1_5 }
+    ]
+  },
+
+  {
+    id: 4,
+    sku: 'B2',
+    name: 'Aero Hybrid Black',
+    category: 'Laptop Backpack',
+    description: 'Built for the fast-paced city lifestyle, Aero Hybrid champions an ultra-clean, minimalist front profile that pairs effortlessly with any professional wardrobe. Weighing 1kg and measuring 32 cm x 46 cm x 18 cm, it securely houses a 15.6-inch laptop within its structured interior. Crafted from durable PU waterproof and mildew-proof fabric, it keeps your tech safe, dry, and looking sharp through the urban commute.',
+    price: 2499,
+    mrp: 4998,
+    stock_quantity: 0,
+    inventory_managed: false,
+    images: [
+      { url: B2_1 },
+      { url: B2_2 },
+      { url: B2_3 },
+      { url: B2_4 },
+      { url: B2_5 }
+    ]
+  },
+
+  {
+    id: 5,
+    sku: 'C3',
+    name: 'Metro Merge Blue',
+    category: 'Laptop Backpack',
+    description: 'Engineered for travel and longer commutes, Metro Merge introduces a distinctive top-flap compartment layout for advanced multi-zone organization. Offering generous dimensions of 32 cm x 46 cm x 18 cm at a lightweight 1kg, it easily accommodates a 15.6-inch laptop and travel gear. Formulated with resilient PU waterproof and mildew-proof fabric, this pack ensures your belongings stay completely fresh, protected, and organized wherever your journey takes you',
+    price: 2499,
+    mrp: 4998,
+    stock_quantity: 0,
+    inventory_managed: false,
+    images: [
+      { url: C3_1 },
+      { url: C3_2 },
+      { url: C3_3 },
+      { url: C3_4 },
+      { url: C3_5 }
+    ]
+  },
+
+  {
+    id: 6,
+    sku: 'C4',
+    name: 'Metro Merge Black',
+    category: 'Laptop Backpack',
+    description: 'Engineered for travel and longer commutes, Metro Merge introduces a distinctive top-flap compartment layout for advanced multi-zone organization. Offering generous dimensions of 32 cm x 46 cm x 18 cm at a lightweight 1kg, it easily accommodates a 15.6-inch laptop and travel gear. Formulated with resilient PU waterproof and mildew-proof fabric, this pack ensures your belongings stay completely fresh, protected, and organized wherever your journey takes you',
+    price: 2499,
+    mrp: 4998,
+    stock_quantity: 0,
+    inventory_managed: false,
+    images: [
+      { url: C4_1 },
+      { url: C4_3 },
+      { url: C4_4 }
+    ]
+  },
+
+  {
+    id: 7,
+    sku: 'D3',
+    name: 'The Omni-Blend',
+    category: 'Laptop Backpack',
+    description: 'Combining high-security tech organization with sharp urban utility, The Fusion Vault is crafted to protect your valuables on the move. Weighing just 1kg with a 32 cm x 46 cm x 18 cm frame, it comfortably fits a 15.6-inch laptop alongside daily gear. Constructed from premium PU waterproof and mildew-proof fabric, it delivers ultimate all-weather defense and a confident, locked-down security experience for the modern professional.',
+    price: 2499,
+    mrp: 4998,
+    stock_quantity: 0,
+    inventory_managed: false,
+    images: [
+      { url: D3_1 },
+      { url: D3_2 },
+      { url: D3_3 },
+      { url: D3_4 },
+      { url: D3_5 }
+    ]
+  },
+
+  {
+    id: 8,
+    sku: 'E1',
+    name: 'The Fusion Vault',
+    category: 'Laptop Backpack',
+    description: 'Combining high-security tech organization with sharp urban utility, The Fusion Vault is crafted to protect your valuables on the move. Weighing just 1kg with a 32 cm x 46 cm x 18 cm frame, it comfortably fits a 15.6-inch laptop alongside daily gear. Constructed from premium PU waterproof and mildew-proof fabric, it delivers ultimate all-weather defense and a confident, locked-down security experience for the modern professional.',
+    price: 2499,
+    mrp: 4998,
+    stock_quantity: 0,
+    inventory_managed: false,
+    images: [
+      { url: E1_1 },
+      { url: E1_2 },
+      { url: E1_3 },
+      { url: E1_4 },
+      { url: E1_5 }
+    ]
+  }
 ];
 
 const money = (v) => `₹${Number(v || 0).toLocaleString('en-IN')}`;
