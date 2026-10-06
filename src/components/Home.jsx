@@ -1,9 +1,23 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { ArrowRight, Check, Heart, Menu, Search, Sparkles, X, ShoppingBag, Truck, Mail, MapPin,ShieldCheck } from 'lucide-react';
+import {
+  ArrowRight,
+  Check,
+  Heart,
+  Menu,
+  Search,
+  Sparkles,
+  X,
+  ShoppingBag,
+  Truck,
+  Mail,
+  MapPin,
+  ShieldCheck,
+  Star
+} from 'lucide-react';
 import '../components/Home.css';
 
 
-const API = import.meta.env.VITE_API_BASE_URL || 'https://api.diagonica.com/api';
+const API = import.meta.env.VITE_API_BASE_URL || 'https://api.rjrinfinity.com/api';
 const SHOP_API = `${API}/griphill`;
 
 import A1_1 from '../assets/WEBP/A1_Web/A1_1.webp';
@@ -206,6 +220,11 @@ const FALLBACK_PRODUCTS = [
 
 const money = (v) => `₹${Number(v || 0).toLocaleString('en-IN')}`;
 const discount = (p) => p.mrp > p.price ? Math.round((1 - p.price / p.mrp) * 100) : 0;
+const CAMPAIGN_BANNERS = [
+  { src: '/banners/bomag-boy-travel.jpeg', alt: 'Bomag Boy travel campaign', title: 'Travel ready.' },
+  { src: '/banners/bomag-boy-business.jpeg', alt: 'Bomag Boy business campaign', title: 'Work with confidence.' },
+  { src: '/banners/bomag-boy-ride.jpeg', alt: 'Bomag Boy ride campaign', title: 'Built for every journey.' },
+];
 
 function loadRazorpay() {
   return new Promise((resolve, reject) => {
@@ -262,6 +281,7 @@ function Modal({ children, onClose, className = '' }) {
 
 export default function Home() {
   const [products, setProducts] = useState(FALLBACK_PRODUCTS);
+  const [testimonials, setTestimonials] = useState([]);
   const [cart, setCart] = useState(() => {
     try { return JSON.parse(localStorage.getItem('griphill_cart') || '[]'); } catch { return []; }
   });
@@ -282,22 +302,36 @@ export default function Home() {
   useEffect(() => {
     fetch(`${SHOP_API}/products`).then(r => r.json()).then(d => { if (d.success && d.products?.length) setProducts(d.products); }).catch(() => {}).finally(() => setLoadingProducts(false));
   }, []);
-
+useEffect(() => {
+  fetch(`${SHOP_API}/testimonials`)
+    .then(r => r.json())
+    .then(d => {
+      if (d.success && Array.isArray(d.testimonials)) {
+        setTestimonials(d.testimonials);
+      }
+    })
+    .catch(() => {});
+}, []);
   const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
   const subtotal = useMemo(() => cart.reduce((sum, item) => sum + Number(item.price) * item.quantity, 0), [cart]);
 
   const addToCart = (product) => {
     setCart(current => {
+      const totalUnits = current.reduce((sum, item) => sum + item.quantity, 0);
       const found = current.find(i => i.productId === product.id);
-      if (found) return current.map(i => i.productId === product.id ? { ...i, quantity: i.quantity + 1 } : i);
+      if (totalUnits >= 2) {
+        setCheckoutError('Maximum 2 items can be ordered in one guest checkout.');
+        return current;
+      }
+      if (found) return current.map(i => i.productId === product.id ? { ...i, quantity: Math.min(2, i.quantity + 1) } : i);
       return [...current, { productId: product.id, sku: product.sku, name: product.name, price: Number(product.price), image: product.images?.[0]?.url, quantity: 1 }];
     });
     setCartOpen(true);
   };
-  const changeQty = (id, delta) => setCart(c => c.map(i => i.productId === id ? { ...i, quantity: Math.max(1, i.quantity + delta) } : i));
+  const changeQty = (id, delta) => setCart(c => { const total = c.reduce((s,i)=>s+i.quantity,0); return c.map(i => i.productId === id ? { ...i, quantity: Math.max(1, Math.min(2, i.quantity + delta + (delta > 0 && total >= 2 ? -delta : 0))) } : i); });
   const removeCart = (id) => setCart(c => c.filter(i => i.productId !== id));
 
-  const startCheckout = () => { setCartOpen(false); setCheckoutError(''); setCheckoutOpen(true); };
+  const startCheckout = () => { if (!cart.length) return; setCartOpen(false); setCheckoutError(''); setCheckoutOpen(true); };
 
   const pay = async (customer) => {
     setCheckoutLoading(true); setCheckoutError('');
@@ -327,7 +361,13 @@ export default function Home() {
         modal: { ondismiss: () => setCheckoutLoading(false) },
       };
       const checkout = new window.Razorpay(options);
-      checkout.on('payment.failed', (response) => { setCheckoutLoading(false); setCheckoutError(response.error?.description || 'Payment failed. Please try again.'); setOrderResult({ success: false, orderNumber: data.order.orderNumber }); });
+      checkout.on('payment.failed', async (response) => {
+        setCheckoutLoading(false);
+        try { await fetch(`${SHOP_API}/payments/failure`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ razorpay_order_id:data.razorpay.orderId, razorpay_payment_id:response.error?.metadata?.payment_id || '', error:response.error || {} }) }); } catch {}
+        setCheckoutOpen(false);
+        setCheckoutError('');
+        setOrderResult({ success: false, orderNumber: data.order.orderNumber });
+      });
       checkout.open();
     } catch (error) { setCheckoutError(error.message); }
     finally { setCheckoutLoading(false); }
@@ -363,10 +403,18 @@ export default function Home() {
 
         <section className="intro section"><div><p className="eyebrow">THE GRIP HILL IDEA</p><h2>Designed for the life you carry.</h2></div><p className="intro-copy">A bag should do more than hold your things. It should fit your rhythm, protect what matters and look right wherever the day takes you.</p></section>
 
+        <section className="campaign-section section" aria-label="Grip Hill campaigns"><div className="section-heading"><div><p className="eyebrow">GRIP HILL / CAMPAIGN</p><h2>Carry confidence everywhere.</h2></div><p className="campaign-note">Explore the new Bomag Boy campaign and then choose your bag below.</p></div><div className="campaign-grid">{CAMPAIGN_BANNERS.map(b => <article className="campaign-card" key={b.src}><img src={b.src} alt={b.alt} /><div className="campaign-caption"><span>{b.title}</span><a href="#new">Shop collection <ArrowRight size={14}/></a></div></article>)}</div></section>
+
         <section className="section" id="new">
           <div className="section-heading"><div><p className="eyebrow">NEW / 2026</p><h2>The latest. Made to move with you.</h2></div><button className="text-link" onClick={() => setCartOpen(true)}>Cart ({cartCount}) <ArrowRight size={16} /></button></div>
           {loadingProducts ? <div className="loading-state">Loading collection…</div> : <div className="product-row">{products.map(p => <ProductCard key={p.id} product={p} onAdd={addToCart} onDetails={setProductOpen} />)}</div>}
         </section>
+
+        <section className="sales-ready section"><div><p className="eyebrow">READY TO ORDER</p><h2>Simple checkout. Secure payment. Clear delivery.</h2></div><div className="sales-ready-grid"><div><Check size={18}/><strong>Guest checkout</strong><span>No account required.</span></div><div><CreditCardIcon/><strong>Razorpay payment</strong><span>UPI, cards and supported methods.</span></div><div><Mail size={18}/><strong>Email updates</strong><span>Order and payment notifications.</span></div><div><Truck size={18}/><strong>Track delivery</strong><span>Use your order number and email.</span></div></div></section>
+
+        <section className="campaign-feature section"><img src="/banners/bomag-boy-premium.jpeg" alt="Bomag Boy premium laptop backpack" /><div><p className="eyebrow">PREMIUM / LAPTOP BACKPACK</p><h2>Designed for modern travellers.</h2><p>15.6-inch laptop compatible, water and mildew resistant, premium PU fabric, anti-theft password lock and multi-compartment storage.</p><a className="button button-dark" href="#new">Shop the collection <ArrowRight size={16}/></a></div></section>
+
+        <section className="offer-banner section"><img src="/banners/bomag-boy-offer.jpeg" alt="Grip Hill Bomag Boy offer" /><div><p className="eyebrow">LAUNCH OFFER</p><h2>50% off selected backpacks.</h2><p>Current collection pricing starts at ₹2,499 against ₹4,998 MRP on the showcased products.</p><a className="button button-dark" href="#new">Shop now <ArrowRight size={16}/></a></div></section>
 
         <section className="feature-banner" id="story"><ImageCard src="/products/A1_Web/A1_1.webp" alt="Grip Hill bag" className="feature-image" /><div className="feature-overlay" /><div className="feature-copy"><p className="eyebrow light-eyebrow">ONE BAG. MANY LIVES.</p><h2>From first coffee<br />to final boarding call.</h2><p>One considered system for work, travel, weekends and everything in between.</p><a className="button button-light" href="#lifestyle">Explore lifestyles <ArrowRight size={17} /></a></div></section>
 
@@ -377,6 +425,81 @@ export default function Home() {
         <section className="lifestyle section" id="lifestyle"><div className="section-heading"><div><p className="eyebrow">CHOOSE YOUR RHYTHM</p><h2>Built around your lifestyle.</h2></div></div><div className="lifestyle-grid">{[['Work','For the days that don\'t slow down.','/products/A2_Web/A2_2.webp'],['Travel','Go further. Carry smarter.','/products/B2_Web/B2_1.webp'],['Weekend','Leave the routine behind.','/products/E1_Web/E1_1.webp']].map(([title,sub,image]) => <article key={title} className="lifestyle-card"><ImageCard src={image} alt={title} className="lifestyle-image" /><div className="lifestyle-overlay" /><div><p className="eyebrow light-eyebrow">GRIP HILL</p><h3>{title}</h3><p>{sub}</p><a href="#new" className="text-link light-link">Shop the edit <ArrowRight size={15} /></a></div></article>)}</div></section>
 
         <section className="journal section" id="journal"><div><p className="eyebrow">THE JOURNAL</p><h2>Stories from the road.</h2></div><div><p>Notes on travel, design, everyday carry and the people who refuse to stand still.</p><button className="text-link" onClick={() => setProductOpen({ article: true })}>Read the journal <ArrowRight size={16} /></button></div></section>
+
+        <section className="testimonials-section section" id="testimonials">
+  <div className="section-heading">
+    <div>
+      <p className="eyebrow">THE GRIP HILL COMMUNITY</p>
+      <h2>Carried by people<br />who move.</h2>
+    </div>
+
+    <p className="testimonials-intro">
+      Real experiences from people who choose Grip Hill for work,
+      travel and everyday movement.
+    </p>
+  </div>
+
+  {testimonials.length > 0 ? (
+    <div className="testimonials-grid">
+      {testimonials.map((testimonial) => (
+        <article
+          className="testimonial-card"
+          key={testimonial.id}
+        >
+          <div className="testimonial-top">
+            <div className="testimonial-stars" aria-label={`${testimonial.rating || 5} out of 5 stars`}>
+              {Array.from({ length: 5 }).map((_, index) => (
+                <Star
+                  key={index}
+                  size={14}
+                  strokeWidth={1.6}
+                  fill={index < Number(testimonial.rating || 5) ? "currentColor" : "none"}
+                />
+              ))}
+            </div>
+
+            {testimonial.is_featured && (
+              <span className="testimonial-featured">
+                FEATURED
+              </span>
+            )}
+          </div>
+
+          <blockquote>
+            “{testimonial.feedback}”
+          </blockquote>
+
+          <div className="testimonial-customer">
+            {testimonial.photo_url ? (
+              <img
+                src={testimonial.photo_url}
+                alt={testimonial.customer_name}
+              />
+            ) : (
+              <div className="testimonial-avatar">
+                {testimonial.customer_name
+                  ?.charAt(0)
+                  ?.toUpperCase() || "G"}
+              </div>
+            )}
+
+            <div>
+              <strong>{testimonial.customer_name}</strong>
+
+              {testimonial.customer_role && (
+                <span>{testimonial.customer_role}</span>
+              )}
+
+              {testimonial.customer_location && (
+                <small>{testimonial.customer_location}</small>
+              )}
+            </div>
+          </div>
+        </article>
+      ))}
+    </div>
+  ) : null}
+</section>
 
         <section className="support-band section"><div><p className="eyebrow">NEED HELP?</p><h2>Questions about your order?</h2></div><div><p>Track an existing order or write directly to the Grip Hill team.</p><div className="support-actions"><button className="button button-dark" onClick={() => setTrackOpen(true)}>Track order <Truck size={16} /></button><button className="text-link" onClick={() => setContactOpen(true)}>Write to us <Mail size={16} /></button></div></div></section>
       </main>
@@ -397,6 +520,7 @@ export default function Home() {
 }
 
 function ShieldIcon() { return <ShieldCheck size={25} strokeWidth={1.5} />; }
+function CreditCardIcon() { return <span className="sales-ready-icon">₹</span>; }
 
 function ProductDetail({ product, onAdd }) {
   const [selected, setSelected] = useState(0);
@@ -405,20 +529,476 @@ function ProductDetail({ product, onAdd }) {
 }
 
 function Cart({ cart, subtotal, changeQty, removeCart, checkout }) {
-  return <div><p className="eyebrow">YOUR BAG</p><h2>{cart.length ? `${cart.reduce((s,i)=>s+i.quantity,0)} item(s)` : 'Your cart is empty'}</h2>{!cart.length ? <div className="empty-state"><ShoppingBag size={32}/><p>Add a product to begin your order.</p><button className="button button-dark" onClick={()=>window.location.hash='new'}>Shop collection <ArrowRight size={16}/></button></div> : <><div className="cart-lines">{cart.map(item=><div className="cart-line" key={item.productId}><img src={item.image} alt={item.name}/><div className="cart-line-main"><strong>{item.name}</strong><span>{money(item.price)}</span><div className="qty"><button onClick={()=>changeQty(item.productId,-1)}>−</button><span>{item.quantity}</span><button onClick={()=>changeQty(item.productId,1)}>+</button><button className="remove" onClick={()=>removeCart(item.productId)}>Remove</button></div></div></div>)}</div><div className="cart-total"><span>Subtotal</span><strong>{money(subtotal)}</strong></div><p className="microcopy">Final shipping and order total are confirmed before payment.</p><button className="button button-dark full-width" onClick={checkout}>Checkout <ArrowRight size={17}/></button></>}</div>;
+  const totalUnits = cart.reduce((s,i)=>s+i.quantity,0);
+  return <div><p className="eyebrow">YOUR BAG</p><h2>{cart.length ? `${totalUnits} item(s)` : 'Your cart is empty'}</h2>{!cart.length ? <div className="empty-state"><ShoppingBag size={32}/><p>Add a product to begin your order.</p><button className="button button-dark" onClick={()=>window.location.hash='new'}>Shop collection <ArrowRight size={16}/></button></div> : <><div className="cart-lines">{cart.map(item=><div className="cart-line" key={item.productId}><img src={item.image} alt={item.name}/><div className="cart-line-main"><strong>{item.name}</strong><span>{money(item.price)}</span><div className="qty"><button onClick={()=>changeQty(item.productId,-1)} disabled={item.quantity<=1}>−</button><span>{item.quantity}</span><button onClick={()=>totalUnits<2&&changeQty(item.productId,1)} disabled={totalUnits>=2}>+</button><button className="remove" onClick={()=>removeCart(item.productId)}>Remove</button></div></div></div>)}</div><div className="cart-total"><span>Subtotal</span><strong>{money(subtotal)}</strong></div><div className="cart-policy">Maximum 2 items per guest order · Secure Razorpay checkout · Delivery tracking available.</div><button className="button button-dark full-width" onClick={checkout}>Checkout <ArrowRight size={17}/></button></>}</div>;
 }
 
 function Checkout({ cart, subtotal, onPay, loading, error }) {
   const [form, setForm] = useState({ name:'', email:'', phone:'', addressLine1:'', addressLine2:'', city:'', state:'', pincode:'', country:'India' });
   const set = (e) => setForm(f=>({...f,[e.target.name]:e.target.value}));
   const submit = (e) => { e.preventDefault(); onPay(form); };
-  return <div><p className="eyebrow">CHECKOUT</p><h2>Complete your order.</h2><form className="checkout-form" onSubmit={submit}><div className="checkout-grid">{[['name','Full name'],['email','Email address'],['phone','Phone number'],['addressLine1','Address line 1'],['addressLine2','Address line 2'],['city','City'],['state','State'],['pincode','PIN code']].map(([name,label])=><label key={name} className={name==='addressLine1'||name==='addressLine2'?'span-2':''}>{label}{name!=='addressLine2'&&' *'}<input name={name} value={form[name]} onChange={set} required={name!=='addressLine2'} /></label>)}</div><div className="checkout-summary"><span>Items</span><strong>{cart.reduce((s,i)=>s+i.quantity,0)}</strong><span>Subtotal</span><strong>{money(subtotal)}</strong><span>Shipping</span><strong>Calculated by store</strong><span>Total before payment</span><strong>{money(subtotal)}</strong></div>{error&&<div className="form-error">{error}</div>}<button className="button button-dark full-width" disabled={loading}>{loading?'Opening secure payment…':'Proceed to secure payment'} <ArrowRight size={17}/></button><p className="microcopy">You will be redirected to Razorpay Checkout. Your card/UPI credentials are never stored by Grip Hill.</p></form></div>;
+  return <div><p className="eyebrow">CHECKOUT</p><h2>Complete your order.</h2><form className="checkout-form" onSubmit={submit}><div className="checkout-grid">{[['name','Full name'],['email','Email address'],['phone','Phone number'],['addressLine1','Address line 1'],['addressLine2','Address line 2'],['city','City'],['state','State'],['pincode','PIN code']].map(([name,label])=><label key={name} className={name==='addressLine1'||name==='addressLine2'?'span-2':''}>{label}{name!=='addressLine2'&&' *'}<input name={name} value={form[name]} onChange={set} required={name!=='addressLine2'} /></label>)}</div><div className="checkout-summary"><span>Items</span><strong>{cart.reduce((s,i)=>s+i.quantity,0)}</strong><span>Subtotal</span><strong>{money(subtotal)}</strong><span>Shipping</span><strong>Free / confirmed by store</strong><span>Total before payment</span><strong>{money(subtotal)}</strong></div>{error&&<div className="form-error">{error}</div>}<button className="button button-dark full-width" disabled={loading}>{loading?'Opening secure payment…':'Proceed to secure payment'} <ArrowRight size={17}/></button><p className="microcopy">You will be redirected to Razorpay Checkout. Your card/UPI credentials are never stored by Grip Hill.</p></form></div>;
 }
 
 function TrackOrder() {
-  const [orderNumber,setOrderNumber]=useState(''); const [email,setEmail]=useState(''); const [state,setState]=useState({loading:false,error:'',order:null});
-  const submit=async(e)=>{e.preventDefault();setState({loading:true,error:'',order:null});try{const r=await fetch(`${SHOP_API}/orders/${encodeURIComponent(orderNumber)}/?email=${encodeURIComponent(email)}`);const d=await r.json();if(!r.ok||!d.success)throw new Error(d.error||'Order not found.');setState({loading:false,error:'',order:d.order});}catch(err){setState({loading:false,error:err.message,order:null});}};
-  return <div><p className="eyebrow">ORDER TRACKING</p><h2>Track your order.</h2><form className="track-form" onSubmit={submit}><label>Order number<input value={orderNumber} onChange={e=>setOrderNumber(e.target.value)} placeholder="GH-2026-000001" required /></label><label>Email address<input type="email" value={email} onChange={e=>setEmail(e.target.value)} required /></label><button className="button button-dark full-width" disabled={state.loading}>{state.loading?'Checking…':'Track order'} <Truck size={17}/></button></form>{state.error&&<div className="form-error">{state.error}</div>}{state.order&&<div className="tracking-result"><div className="tracking-head"><strong>#{state.order.order_number}</strong><span>{state.order.status.replaceAll('_',' ')}</span></div><p>{state.order.customer_name} · {money(state.order.total_amount)}</p><div className="timeline">{state.order.history?.map((h,i)=><div className="timeline-item" key={`${h.status}-${i}`}><div className="timeline-dot">{i===state.order.history.length-1?<Check size={12}/>:''}</div><div><strong>{h.status.replaceAll('_',' ')}</strong><small>{new Date(h.createdAt).toLocaleString('en-IN')}</small><p>{h.remarks}</p></div></div>)}</div>{state.order.tracking_number&&<div className="tracking-box"><Truck size={18}/><div><strong>{state.order.courier_name||'Courier'}</strong><span>{state.order.tracking_number}</span></div></div>}</div>}</div>;
+  const [orderNumber, setOrderNumber] = useState('');
+  const [email, setEmail] = useState('');
+
+  const [state, setState] = useState({
+    loading: false,
+    error: '',
+    order: null
+  });
+
+  // -------------------------------------------------------
+  // LOAD ORDER FROM URL
+  // Example:
+  // /track-order?order=GH-2026-000011&email=abc@gmail.com
+  // -------------------------------------------------------
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+
+    const urlOrder = params.get('order') || '';
+    const urlEmail = params.get('email') || '';
+
+    console.log('TRACK ORDER URL');
+    console.log('Order:', urlOrder);
+    console.log('Email:', urlEmail);
+
+    if (urlOrder) {
+      setOrderNumber(urlOrder);
+    }
+
+    if (urlEmail) {
+      setEmail(urlEmail);
+    }
+
+    // Automatically search when both values exist
+    if (urlOrder && urlEmail) {
+      loadOrder(urlOrder, urlEmail);
+    }
+  }, []);
+
+  // -------------------------------------------------------
+  // FETCH ORDER
+  // -------------------------------------------------------
+  const loadOrder = async (orderNo, customerEmail) => {
+    const cleanOrder = String(orderNo || '').trim();
+    const cleanEmail = String(customerEmail || '').trim();
+
+    if (!cleanOrder || !cleanEmail) {
+      setState({
+        loading: false,
+        error: 'Order number and email address are required.',
+        order: null
+      });
+
+      return;
+    }
+
+    setState({
+      loading: true,
+      error: '',
+      order: null
+    });
+
+    try {
+      const url =
+        `${SHOP_API}/orders/${encodeURIComponent(cleanOrder)}` +
+        `?email=${encodeURIComponent(cleanEmail)}`;
+
+      console.log('TRACK ORDER API:', url);
+
+      const response = await fetch(url);
+
+      console.log(
+        'TRACK ORDER STATUS:',
+        response.status
+      );
+
+      const data = await response.json();
+
+      console.log(
+        'TRACK ORDER RESPONSE:',
+        data
+      );
+
+      if (!response.ok || !data.success) {
+        throw new Error(
+          data.error ||
+          data.message ||
+          'Order not found. Please check your order number and email address.'
+        );
+      }
+
+      setState({
+        loading: false,
+        error: '',
+        order: data.order
+      });
+
+    } catch (error) {
+      console.error(
+        'TRACK ORDER ERROR:',
+        error
+      );
+
+      setState({
+        loading: false,
+        error:
+          error.message ||
+          'Unable to retrieve order tracking information.',
+        order: null
+      });
+    }
+  };
+
+  // -------------------------------------------------------
+  // MANUAL FORM SUBMIT
+  // -------------------------------------------------------
+  const submit = async (e) => {
+    e.preventDefault();
+
+    await loadOrder(
+      orderNumber,
+      email
+    );
+  };
+
+  // -------------------------------------------------------
+  // STATUS LABEL
+  // -------------------------------------------------------
+  const statusLabel = (status) => {
+    const labels = {
+      PENDING_PAYMENT: 'Payment Pending',
+      PAYMENT_PENDING: 'Payment Pending',
+      PAYMENT_FAILED: 'Payment Failed',
+      PAID: 'Payment Confirmed',
+      PROCESSING: 'Processing',
+      PACKED: 'Packed',
+      SHIPPED: 'Shipped',
+      OUT_FOR_DELIVERY: 'Out for Delivery',
+      DELIVERED: 'Delivered',
+      CANCELLED: 'Cancelled',
+      REFUNDED: 'Refunded'
+    };
+
+    return (
+      labels[status] ||
+      String(status || '')
+        .replaceAll('_', ' ')
+    );
+  };
+
+  // -------------------------------------------------------
+  // PAYMENT STATUS LABEL
+  // -------------------------------------------------------
+  const paymentLabel = (status) => {
+    const labels = {
+      CREATED: 'Payment Pending',
+      CAPTURED: 'Payment Successful',
+      FAILED: 'Payment Failed'
+    };
+
+    return (
+      labels[status] ||
+      String(status || '')
+        .replaceAll('_', ' ')
+    );
+  };
+
+  return (
+    <div>
+
+      <p className="eyebrow">
+        ORDER TRACKING
+      </p>
+
+      <h2>
+        Track your order.
+      </h2>
+
+      <form
+        className="track-form"
+        onSubmit={submit}
+      >
+
+        <label>
+          Order number
+
+          <input
+            value={orderNumber}
+            onChange={(e) =>
+              setOrderNumber(e.target.value)
+            }
+            placeholder="GH-2026-000001"
+            required
+          />
+        </label>
+
+        <label>
+          Email address
+
+          <input
+            type="email"
+            value={email}
+            onChange={(e) =>
+              setEmail(e.target.value)
+            }
+            placeholder="your@email.com"
+            required
+          />
+        </label>
+
+        <button
+          className="button button-dark full-width"
+          disabled={state.loading}
+        >
+          {state.loading
+            ? 'Checking…'
+            : 'Track order'}
+
+          <Truck size={17} />
+        </button>
+
+      </form>
+
+      {/* ERROR */}
+      {state.error && (
+        <div className="form-error">
+          {state.error}
+        </div>
+      )}
+
+      {/* ORDER RESULT */}
+      {state.order && (
+        <div className="tracking-result">
+
+          {/* HEADER */}
+          <div className="tracking-head">
+
+            <strong>
+              #{state.order.order_number}
+            </strong>
+
+            <span>
+              {statusLabel(
+                state.order.status
+              )}
+            </span>
+
+          </div>
+
+          {/* CUSTOMER / TOTAL */}
+          <p>
+            {state.order.customer_name}
+            {' · '}
+            {money(
+              state.order.total_amount
+            )}
+          </p>
+
+          {/* PAYMENT */}
+          <div
+            className="tracking-box"
+            style={{
+              marginTop: '12px'
+            }}
+          >
+
+            <div>
+
+              <strong>
+                Payment
+              </strong>
+
+              <span>
+                {paymentLabel(
+                  state.order.payment_status
+                )}
+              </span>
+
+            </div>
+
+          </div>
+
+          {/* PRODUCTS */}
+          {Array.isArray(
+            state.order.items
+          ) &&
+            state.order.items.length > 0 && (
+              <div
+                className="tracking-box"
+                style={{
+                  marginTop: '12px',
+                  display: 'block'
+                }}
+              >
+
+                <strong>
+                  Products
+                </strong>
+
+                <div
+                  style={{
+                    marginTop: '10px'
+                  }}
+                >
+
+                  {state.order.items.map(
+                    (item, index) => (
+                      <div
+                        key={`${item.sku}-${index}`}
+                        style={{
+                          display: 'flex',
+                          justifyContent:
+                            'space-between',
+                          gap: '12px',
+                          padding:
+                            '8px 0',
+                          borderBottom:
+                            '1px solid #eee'
+                        }}
+                      >
+
+                        <span>
+                          {item.name}
+                          {' × '}
+                          {item.quantity}
+                        </span>
+
+                        <strong>
+                          {money(
+                            item.lineTotal
+                          )}
+                        </strong>
+
+                      </div>
+                    )
+                  )}
+
+                </div>
+
+              </div>
+            )}
+
+          {/* TIMELINE */}
+          <div className="timeline">
+
+            {state.order.history?.map(
+              (h, i) => (
+                <div
+                  className="timeline-item"
+                  key={`${h.status}-${i}`}
+                >
+
+                  <div className="timeline-dot">
+
+                    {i ===
+                    state.order.history
+                      .length - 1 ? (
+                      <Check size={12} />
+                    ) : (
+                      ''
+                    )}
+
+                  </div>
+
+                  <div>
+
+                    <strong>
+                      {statusLabel(
+                        h.status
+                      )}
+                    </strong>
+
+                    <small>
+                      {new Date(
+                        h.createdAt
+                      ).toLocaleString(
+                        'en-IN'
+                      )}
+                    </small>
+
+                    {h.remarks && (
+                      <p>
+                        {h.remarks}
+                      </p>
+                    )}
+
+                  </div>
+
+                </div>
+              )
+            )}
+
+          </div>
+
+          {/* DELIVERY */}
+          <div
+            className="tracking-box"
+            style={{
+              marginTop: '15px'
+            }}
+          >
+
+            <Truck size={18} />
+
+            <div>
+
+              <strong>
+                {state.order.courier_name ||
+                  'Delivery'}
+              </strong>
+
+              <span>
+                {state.order.tracking_number ||
+                  'Tracking number will appear after dispatch'}
+              </span>
+
+              {state.order.estimated_delivery_date && (
+                <span>
+                  Estimated delivery:{' '}
+                  {new Date(
+                    state.order
+                      .estimated_delivery_date
+                  ).toLocaleDateString(
+                    'en-IN'
+                  )}
+                </span>
+              )}
+
+            </div>
+
+          </div>
+
+          {/* SHIPPING ADDRESS */}
+          <div
+            className="tracking-box"
+            style={{
+              marginTop: '15px'
+            }}
+          >
+
+            <div>
+
+              <strong>
+                Shipping address
+              </strong>
+
+              <span>
+                {state.order.shipping_address}
+              </span>
+
+            </div>
+
+          </div>
+
+        </div>
+      )}
+
+    </div>
+  );
 }
 
 function ContactForm({ onDone }) {
