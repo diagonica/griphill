@@ -66,6 +66,17 @@ import E1_3 from '../assets/WEBP/E1_Web/E1_3.webp';
 import E1_4 from '../assets/WEBP/E1_Web/E1_4.webp';
 import E1_5 from '../assets/WEBP/E1_Web/E1_5.webp';
 
+import F1_1 from '../assets/WEBP/F1_Web/F1_1.webp';
+import F1_2 from '../assets/WEBP/F1_Web/F1_2.webp';
+import F1_3 from '../assets/WEBP/F1_Web/F1_3.webp';
+import F1_4 from '../assets/WEBP/F1_Web/F1_4.webp';
+
+import F2_1 from '../assets/WEBP/F2_Web/F2_1.webp';
+import F2_2 from '../assets/WEBP/F2_Web/F2_2.webp';
+import F2_3 from '../assets/WEBP/F2_Web/F2_3.webp';
+import F2_4 from '../assets/WEBP/F2_Web/F2_4.webp';
+
+
 const FALLBACK_PRODUCTS = [
   {
     id: 1,
@@ -215,6 +226,40 @@ const FALLBACK_PRODUCTS = [
       { url: E1_4 },
       { url: E1_5 }
     ]
+  },
+  {
+    id: 9,
+    sku: 'F1',
+    name: 'Grip Hill Executive Pro Backpack – Navy Blue',
+    category: 'Laptop Backpack',
+    description: 'Combining sophisticated urban style with everyday functionality, the Grip Hill Executive Pro Backpack is designed for professionals, students, and modern travelers who value style and convenience. Featuring a premium navy-blue finish, a sleek structured silhouette, and elegant detailing, this backpack delivers a polished look for work, college, and daily commutes. Its thoughtfully designed compartments offer practical storage for your everyday essentials, while the durable exterior and smooth zip closures make it a versatile companion for life on the move. Smart, stylish, and functional, it brings confidence and convenience to every journey.',
+    price: 2499,
+    mrp: 4998,
+    stock_quantity: 0,
+    inventory_managed: false,
+    images: [
+      { url: F1_1 },
+      { url: F1_2 },
+      { url: F1_3 },
+      { url: F1_4 },
+    ]
+  },
+    {
+    id: 10,
+    sku: 'F2',
+    name: 'Grip Hill Executive Pro Backpack – Grey',
+    category: 'Laptop Backpack',
+    description: 'Combining sophisticated urban style with everyday functionality, the Grip Hill Executive Pro Backpack is designed for professionals, students, and modern travelers who value style and convenience. Featuring a premium navy-blue finish, a sleek structured silhouette, and elegant detailing, this backpack delivers a polished look for work, college, and daily commutes. Its thoughtfully designed compartments offer practical storage for your everyday essentials, while the durable exterior and smooth zip closures make it a versatile companion for life on the move. Smart, stylish, and functional, it brings confidence and convenience to every journey.',
+    price: 2499,
+    mrp: 4998,
+    stock_quantity: 0,
+    inventory_managed: false,
+    images: [
+      { url: F2_1 },
+      { url: F2_2 },
+      { url: F2_3 },
+      { url: F2_4 },
+    ]
   }
 ];
 
@@ -299,9 +344,39 @@ export default function Home() {
 
   useEffect(() => { localStorage.setItem('griphill_cart', JSON.stringify(cart)); }, [cart]);
   useEffect(() => { if (window.location.pathname === '/track-order') setTrackOpen(true); }, []);
-  useEffect(() => {
-    fetch(`${SHOP_API}/products`).then(r => r.json()).then(d => { if (d.success && d.products?.length) setProducts(d.products); }).catch(() => {}).finally(() => setLoadingProducts(false));
-  }, []);
+
+useEffect(() => {
+  fetch(`${SHOP_API}/products`)
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error('Unable to load products');
+      }
+      return response.json();
+    })
+    .then((data) => {
+      if (data.success && Array.isArray(data.products) && data.products.length) {
+        const mergedProducts = data.products.map((product) => {
+          const localImages = getProductImages(product.sku);
+
+          return {
+            ...product,
+            images: localImages.length
+              ? localImages
+              : (product.images || []),
+          };
+        });
+
+        setProducts(mergedProducts);
+      }
+    })
+    .catch((error) => {
+      console.error('Product loading failed:', error);
+    })
+    .finally(() => {
+      setLoadingProducts(false);
+    });
+}, []);
+
 useEffect(() => {
   fetch(`${SHOP_API}/testimonials`)
     .then(r => r.json())

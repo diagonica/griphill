@@ -1617,3 +1617,211 @@ a {
 
 @media(max-width:900px){.campaign-grid{grid-template-columns:1fr 1fr}.sales-ready{grid-template-columns:1fr}.campaign-feature,.offer-banner{grid-template-columns:1fr}.admin-stats{grid-template-columns:1fr 1fr}.admin-overview-grid{grid-template-columns:1fr}.admin-wide{grid-column:auto}}
 @media(max-width:600px){.campaign-grid{grid-template-columns:1fr}.campaign-card{min-height:auto}.campaign-caption{left:15px;right:15px}.sales-ready{margin-left:4vw;margin-right:4vw;padding:35px 5vw}.sales-ready-grid{grid-template-columns:1fr}.admin-page{padding:30px 4vw 60px}.admin-header{align-items:start;flex-direction:column}.admin-header-actions{width:100%}.admin-stats{grid-template-columns:1fr}.admin-panel{padding:17px}.detail-customer{grid-template-columns:1fr}.detail-customer>div:last-child{grid-column:auto}.admin-detail{padding:30px 20px}}
+
+/* =========================================
+   GRIP HILL — REFINED PRODUCT CATALOGUE
+   Add at the end of the existing CSS file
+   ========================================= */
+
+.product-row {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 22px;
+  align-items: start;
+}
+
+.product-card {
+  min-width: 0;
+  transition: transform 0.25s ease;
+}
+
+.product-card:hover {
+  transform: translateY(-3px);
+}
+
+.product-image-wrap {
+  aspect-ratio: 0.79;
+  border-radius: 18px;
+  background: #e9e9e3;
+  overflow: hidden;
+  position: relative;
+}
+
+.product-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  mix-blend-mode: multiply;
+  transition: transform 0.35s ease;
+}
+
+.product-image-wrap:hover .product-image {
+  transform: scale(1.035);
+}
+
+.product-badge {
+  font-size: 8px;
+  padding: 7px 10px;
+  letter-spacing: 0.06em;
+}
+
+.heart-button {
+  width: 36px;
+  height: 36px;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.heart-button:hover {
+  background: #fff;
+  transform: scale(1.06);
+}
+
+.quick-add {
+  transform: translateY(0);
+  opacity: 0;
+  transition: opacity 0.25s ease, background 0.2s ease;
+}
+
+.product-image-wrap:hover .quick-add,
+.product-image-wrap:focus-within .quick-add {
+  opacity: 1;
+}
+
+.product-info {
+  padding: 17px 2px 22px;
+}
+
+.product-info h3 {
+  font-size: clamp(17px, 1.45vw, 22px);
+  line-height: 1.3;
+  margin: 0 0 10px;
+}
+
+.product-pricing {
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.product-pricing span {
+  font-size: 15px;
+}
+
+.product-pricing del {
+  font-size: 11px;
+}
+
+.product-pricing b {
+  font-size: 9px;
+  color: #777;
+}
+
+.product-description {
+  font-size: 11px;
+  line-height: 1.65;
+  color: var(--muted);
+  min-height: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.product-actions {
+  margin-top: 14px;
+  flex-wrap: wrap;
+}
+
+.product-details-link {
+  font-size: 10px;
+}
+
+@media (max-width: 1050px) {
+  .product-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 24px 18px;
+  }
+}
+
+@media (max-width: 760px) {
+  .product-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px 12px;
+  }
+
+  .product-image-wrap {
+    aspect-ratio: 0.78;
+    border-radius: 13px;
+  }
+
+  .product-info {
+    padding: 12px 1px 18px;
+  }
+
+  .product-info h3 {
+    font-size: 16px;
+    line-height: 1.35;
+  }
+
+  .product-pricing {
+    gap: 5px;
+  }
+
+  .product-pricing span {
+    font-size: 13px;
+  }
+
+  .product-pricing del {
+    font-size: 9px;
+  }
+
+  .product-pricing b {
+    font-size: 8px;
+  }
+
+  .product-description {
+    font-size: 10px;
+    line-height: 1.55;
+  }
+
+  .product-badge {
+    left: 7px;
+    top: 7px;
+    padding: 6px 7px;
+    font-size: 7px;
+  }
+
+  .heart-button {
+    width: 30px;
+    height: 30px;
+    right: 7px;
+    top: 7px;
+  }
+
+  .quick-add {
+    left: 7px;
+    right: 7px;
+    bottom: 7px;
+    padding: 9px 6px;
+    font-size: 9px;
+  }
+
+  /* Touchscreens should not depend on hover to reveal actions. */
+  .product-image-wrap .quick-add {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (max-width: 360px) {
+  .product-row {
+    gap: 16px 9px;
+  }
+
+  .product-info h3 {
+    font-size: 14px;
+  }
+
+  .product-pricing span {
+    font-size: 12px;
+  }
+}
