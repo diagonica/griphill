@@ -44,15 +44,15 @@ import B2_3 from '../assets/WEBP/B2_Web/B2_3.webp';
 import B2_4 from '../assets/WEBP/B2_Web/B2_4.webp';
 import B2_5 from '../assets/WEBP/B2_Web/B2_5.webp';
 
-import C3_1 from '../assets/WEBP/C3_Web/C3_1.webp';
-import C3_2 from '../assets/WEBP/C3_Web/C3_2.webp';
-import C3_3 from '../assets/WEBP/C3_Web/C3_3.webp';
-import C3_4 from '../assets/WEBP/C3_Web/C3_4.webp';
-import C3_5 from '../assets/WEBP/C3_Web/C3_5.webp';
+// import C3_1 from '../assets/WEBP/C3_Web/C3_1.webp';
+// import C3_2 from '../assets/WEBP/C3_Web/C3_2.webp';
+// import C3_3 from '../assets/WEBP/C3_Web/C3_3.webp';
+// import C3_4 from '../assets/WEBP/C3_Web/C3_4.webp';
+// import C3_5 from '../assets/WEBP/C3_Web/C3_5.webp';
 
-import C4_1 from '../assets/WEBP/C4_Web/C4_1.webp';
-import C4_3 from '../assets/WEBP/C4_Web/C4_3.webp';
-import C4_4 from '../assets/WEBP/C4_Web/C4_4.webp';
+// import C4_1 from '../assets/WEBP/C4_Web/C4_1.webp';
+// import C4_3 from '../assets/WEBP/C4_Web/C4_3.webp';
+// import C4_4 from '../assets/WEBP/C4_Web/C4_4.webp';
 
 import D3_1 from '../assets/WEBP/D3_Web/D3_1.webp';
 import D3_2 from '../assets/WEBP/D3_Web/D3_2.webp';
@@ -154,41 +154,41 @@ const FALLBACK_PRODUCTS = [
     ]
   },
 
-  {
-    id: 5,
-    sku: 'C3',
-    name: 'Metro Merge Blue',
-    category: 'Laptop Backpack',
-    description: 'Engineered for travel and longer commutes, Metro Merge introduces a distinctive top-flap compartment layout for advanced multi-zone organization. Offering generous dimensions of 32 cm x 46 cm x 18 cm at a lightweight 1kg, it easily accommodates a 15.6-inch laptop and travel gear. Formulated with resilient PU waterproof and mildew-proof fabric, this pack ensures your belongings stay completely fresh, protected, and organized wherever your journey takes you',
-    price: 2499,
-    mrp: 4998,
-    stock_quantity: 0,
-    inventory_managed: false,
-    images: [
-      { url: C3_1 },
-      { url: C3_2 },
-      { url: C3_3 },
-      { url: C3_4 },
-      { url: C3_5 }
-    ]
-  },
+  // {
+  //   id: 5,
+  //   sku: 'C3',
+  //   name: 'Metro Merge Blue',
+  //   category: 'Laptop Backpack',
+  //   description: 'Engineered for travel and longer commutes, Metro Merge introduces a distinctive top-flap compartment layout for advanced multi-zone organization. Offering generous dimensions of 32 cm x 46 cm x 18 cm at a lightweight 1kg, it easily accommodates a 15.6-inch laptop and travel gear. Formulated with resilient PU waterproof and mildew-proof fabric, this pack ensures your belongings stay completely fresh, protected, and organized wherever your journey takes you',
+  //   price: 2499,
+  //   mrp: 4998,
+  //   stock_quantity: 0,
+  //   inventory_managed: false,
+  //   images: [
+  //     { url: C3_1 },
+  //     { url: C3_2 },
+  //     { url: C3_3 },
+  //     { url: C3_4 },
+  //     { url: C3_5 }
+  //   ]
+  // },
 
-  {
-    id: 6,
-    sku: 'C4',
-    name: 'Metro Merge Black',
-    category: 'Laptop Backpack',
-    description: 'Engineered for travel and longer commutes, Metro Merge introduces a distinctive top-flap compartment layout for advanced multi-zone organization. Offering generous dimensions of 32 cm x 46 cm x 18 cm at a lightweight 1kg, it easily accommodates a 15.6-inch laptop and travel gear. Formulated with resilient PU waterproof and mildew-proof fabric, this pack ensures your belongings stay completely fresh, protected, and organized wherever your journey takes you',
-    price: 2499,
-    mrp: 4998,
-    stock_quantity: 0,
-    inventory_managed: false,
-    images: [
-      { url: C4_1 },
-      { url: C4_3 },
-      { url: C4_4 }
-    ]
-  },
+  // {
+  //   id: 6,
+  //   sku: 'C4',
+  //   name: 'Metro Merge Black',
+  //   category: 'Laptop Backpack',
+  //   description: 'Engineered for travel and longer commutes, Metro Merge introduces a distinctive top-flap compartment layout for advanced multi-zone organization. Offering generous dimensions of 32 cm x 46 cm x 18 cm at a lightweight 1kg, it easily accommodates a 15.6-inch laptop and travel gear. Formulated with resilient PU waterproof and mildew-proof fabric, this pack ensures your belongings stay completely fresh, protected, and organized wherever your journey takes you',
+  //   price: 2499,
+  //   mrp: 4998,
+  //   stock_quantity: 0,
+  //   inventory_managed: false,
+  //   images: [
+  //     { url: C4_1 },
+  //     { url: C4_3 },
+  //     { url: C4_4 }
+  //   ]
+  // },
 
   {
     id: 7,
